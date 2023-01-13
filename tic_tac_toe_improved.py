@@ -11,7 +11,7 @@ def button_press(row, column):
 
             # print(buttons[row][column]['text'])
             if check_winner(row, column):
-                player_text.set(player + " wins!")
+                end_game(player)
                 return ""
 
             # change to other player
@@ -20,7 +20,7 @@ def button_press(row, column):
             buttons[row][column]['text'] = player
 
             if check_winner(row, column):
-                player_text.set(player + " wins!")
+                end_game(player)
                 return ""
                 
             # change to other player
@@ -163,6 +163,10 @@ def check_winner(row, column):
             break
 
     return False
+    player_text.set(player + " turn")
+
+def end_game(winner):
+    player_text.set(winner + " wins!")
 
 
 window = Tk()
@@ -180,11 +184,11 @@ width = window.winfo_screenwidth()
 height = window.winfo_screenheight()
 window.geometry("%dx%d" % (600, 600))
 frame = Frame(window, bg="black")
-frame.pack()
+
 
 player_text = StringVar()
 player_text.set(player + "'s" + " turn")
-turn_label = Label(window, textvariable=player_text, font=('consolas',20))
+turn_label = Label(window, textvariable=player_text, font=('consolas',30))
 turn_label.pack(side=BOTTOM)
 
 for row in range(25):

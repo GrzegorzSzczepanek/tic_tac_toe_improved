@@ -22,7 +22,7 @@ def button_press(row, column):
             if check_winner(row, column):
                 end_game(player)
                 return ""
-                
+
             # change to other player
             player = players[0]
 
@@ -39,7 +39,7 @@ def check_winner(row, column):
     check = 0
 
     while y >= 0:
-        try: 
+        try:
             if buttons[x][y]['text'] == player:
                 check += 1
                 y -= 1
@@ -112,7 +112,7 @@ def check_winner(row, column):
                 break
         except Exception:
             break
-    # top-left diagonal 
+    # top-left diagonal
     x = row - 1
     y = column - 1
 
@@ -165,49 +165,72 @@ def check_winner(row, column):
     return False
     player_text.set(player + " turn")
 
+
 def end_game(winner):
     player_text.set(winner + " wins!")
 
 
-window = Tk()
 
-# variable used to check who's starting
+
+
+def generate_board():
+    # variable used to check who's starting
+
+
+    # window setup
+    window.title("Tic Tac Toe 2")
+    window.grid_rowconfigure(1, weight=1)
+    window.grid_columnconfigure(0, weight=1)
+
+    # window.attributes('-fullscreen', True)
+    width = window.winfo_screenwidth()
+    height = window.winfo_screenheight()
+    window.geometry("%dx%d" % (600, 600))
+    frame = Frame(window, bg="black")
+    frame.grid(row=1, column=1, sticky="nsew")
+
+    option_buttons_frame = Frame(window, width=500, bg="black")
+
+    restart_btn = Button(Button(frame,
+                                text="Restart Game",
+                                bg="#000",
+                                width=2,
+                                height=1,
+                                fg="white",
+                                command=restart_game))
+
+    player_text.set(player + "'s" + " turn")
+    turn_label = Label(window, textvariable=player_text, font=('consolas', 30))
+    turn_label.grid(row=2, column=1)
+
+    for row in range(25):
+        buttons.append([])
+        for column in range(25):
+            buttons[row].append(column)
+
+    # setting fields for the game
+    for row in range(0, 20):
+        for column in range(0, 20):
+            buttons[row][column] = Button(frame,
+                                          text="",
+                                          bg="#000",
+                                          width=2,
+                                          height=1,
+                                          fg="white",
+                                          command=lambda row=row, column=column: button_press(row, column))
+
+            buttons[row][column].grid(row=row, column=column)
+
+
+def restart_game():
+    pass
+
+
+window = Tk()
+player_text = StringVar()
 players = ["o", "x"]
 player = random.choice(players)
 buttons = []
-
-# window setup
-window.title("Tic Tac Toe 2")
-
-# window.attributes('-fullscreen', True)
-width = window.winfo_screenwidth()
-height = window.winfo_screenheight()
-window.geometry("%dx%d" % (600, 600))
-frame = Frame(window, bg="black")
-
-
-player_text = StringVar()
-player_text.set(player + "'s" + " turn")
-turn_label = Label(window, textvariable=player_text, font=('consolas',30))
-turn_label.pack(side=BOTTOM)
-
-for row in range(25):
-    buttons.append([])
-    for column in range(25):
-        buttons[row].append(column)
-
-
-# setting fields for the game
-for row in range(0, 20):
-    for column in range(0, 20):
-        buttons[row][column] = Button(frame,
-                                      text="",
-                                      bg="#000",
-                                      width=2,
-                                      height=1,
-                                      fg="white",
-                                      command=lambda row=row, column=column: button_press(row, column))
-
-        buttons[row][column].grid(row=row, column=column)
+generate_board()
 
 window.mainloop()

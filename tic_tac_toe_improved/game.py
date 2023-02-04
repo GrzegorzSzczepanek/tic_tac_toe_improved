@@ -1,9 +1,18 @@
 import random
 from tkinter import *
+import socket
 
 
 def button_press(row, column):
     global player
+    clicked_button = str(row) + "," + str(column)
+    client.send(clicked_button.encode())
+    data = client.recv(2048)
+    data = data.decode('utf-8')
+    received_data = list(map(int, data.split(",")))
+    row = received_data[0]
+    column = received_data[1]
+    print("received: ", data)
 
     if buttons[row][column]['text'] == "" and check_winner(row, column) is False:
         if player == players[0]:
@@ -26,11 +35,11 @@ def button_press(row, column):
             # change to other player
             player = players[0]
 
-    # inform about another's players turn
+    # inform about another players turn
     player_text.set(player + " turn")
 
+# check is number of current player symbols in row or column
 
-#check is number of current player symbols in row or column
 
 def check_winner(row, column):
     # check left
@@ -48,7 +57,7 @@ def check_winner(row, column):
                     return True
             else:
                 break
-        except Exception: # it repairs 'int object is no subscriptable errors
+        except Exception:  # it repairs 'int object is no subscriptable errors
             break
     # check right
     y = column + 1
@@ -79,7 +88,7 @@ def check_winner(row, column):
                     return True
             else:
                 break
-        except Exception: #it repairs 'int object is no subscriptable errors
+        except Exception:  # it repairs 'int object is no subscriptable errors
             break
     # check bottom
     x = row + 1
@@ -170,19 +179,12 @@ def end_game(winner):
     player_text.set(winner + " wins!")
 
 
-
-
-
 def generate_board():
-    # variable used to check who's starting
-
-
     # window setup
     window.title("Tic Tac Toe 2")
     window.grid_rowconfigure(1, weight=1)
     window.grid_columnconfigure(0, weight=1)
 
-    # window.attributes('-fullscreen', True)
     width = window.winfo_screenwidth()
     height = window.winfo_screenheight()
     window.geometry("%dx%d" % (600, 600))
@@ -218,7 +220,6 @@ def generate_board():
                                           height=1,
                                           fg="white",
                                           command=lambda row=row, column=column: button_press(row, column))
-
             buttons[row][column].grid(row=row, column=column)
 
 
@@ -227,10 +228,17 @@ def restart_game():
 
 
 window = Tk()
+
 player_text = StringVar()
 players = ["o", "x"]
+# variable used to check who's starting
 player = random.choice(players)
 buttons = []
+
 generate_board()
 
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(("127.0.0.1", 15200))
 window.mainloop()
+client.close()

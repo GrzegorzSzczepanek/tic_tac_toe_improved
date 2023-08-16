@@ -2,6 +2,16 @@ import random
 from tkinter import *
 import socket
 
+def disable_all_buttons():
+    for row in range(0, 20):
+        for column in range(0, 20):
+            buttons[row][column].config(state="disabled")
+
+
+def end_game(winner):
+    player_text.set(winner + " wins!")
+    disable_all_buttons()
+
 
 def button_press(row, column):
     global player
@@ -41,21 +51,29 @@ def button_press(row, column):
 # check is number of current player symbols in row or column
 
 
+def color_winner(cords):
+    for i in cords:
+        buttons[i[0]][i[1]].config(bg="green")
+
+
 def check_winner(row, column):
     # check left
     x = row
     y = column
     check = 0
-
+    winning = []
     while y >= 0:
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 check += 1
                 y -= 1
-                print(check)
+                # print(check)
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:  # it repairs 'int object is no subscriptable errors
             break
@@ -64,12 +82,15 @@ def check_winner(row, column):
     while y <= len(buttons):
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 check += 1
                 y += 1
                 # print(check)
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
@@ -81,12 +102,15 @@ def check_winner(row, column):
     while x >= 0:
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 check += 1
                 x -= 1
                 # print(check)
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:  # it repairs 'int object is no subscriptable errors
             break
@@ -95,12 +119,15 @@ def check_winner(row, column):
     while x <= len(buttons):
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 check += 1
                 x += 1
                 # print(check)
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
@@ -112,12 +139,15 @@ def check_winner(row, column):
     while x <= len(buttons) and y <= len(buttons):
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 check += 1
                 x += 1
                 y += 1
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
@@ -128,12 +158,15 @@ def check_winner(row, column):
     while x >= 0 and y >= 0:
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 x -= 1
                 y -= 1
                 check += 1
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
@@ -144,12 +177,15 @@ def check_winner(row, column):
     while x <= len(buttons) and y <= len(buttons):
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 x += 1
                 y -= 1
                 check += 1
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
@@ -161,22 +197,22 @@ def check_winner(row, column):
     while x >= 0 and y <= len(buttons):
         try:
             if buttons[x][y]['text'] == player:
+                winning.append([x, y])
                 x -= 1
                 y += 1
                 check += 1
+                # buttons.append()
                 if check == 5:
+                    color_winner(winning)
                     return True
             else:
+                winning = []
                 break
         except Exception:
             break
 
     return False
     player_text.set(player + " turn")
-
-
-def end_game(winner):
-    player_text.set(winner + " wins!")
 
 
 def generate_board():
@@ -205,22 +241,22 @@ def generate_board():
     turn_label = Label(window, textvariable=player_text, font=('consolas', 30))
     turn_label.grid(row=2, column=1)
 
-    for row in range(25):
-        buttons.append([])
-        for column in range(25):
-            buttons[row].append(column)
+    for row in range(20):
+        pass
 
     # setting fields for the game
     for row in range(0, 20):
+        buttons.append([])
         for column in range(0, 20):
-            buttons[row][column] = Button(frame,
+            buttons[row].append(Button(frame,
                                           text="",
                                           bg="#000",
                                           width=2,
                                           height=1,
                                           fg="white",
-                                          command=lambda row=row, column=column: button_press(row, column))
+                                          command=lambda row=row, column=column: button_press(row, column)))
             buttons[row][column].grid(row=row, column=column)
+
 
 
 def restart_game():

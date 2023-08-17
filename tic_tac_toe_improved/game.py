@@ -2,6 +2,11 @@ import random
 from tkinter import *
 import socket
 
+
+def restart_game():
+    pass
+
+
 def disable_all_buttons():
     for row in range(0, 20):
         for column in range(0, 20):
@@ -23,6 +28,8 @@ def button_press(row, column):
     row = received_data[0]
     column = received_data[1]
     print("received: ", data)
+
+    buttons[row][column].config(state="disabled")
 
     if buttons[row][column]['text'] == "" and check_winner(row, column) is False:
         if player == players[0]:
@@ -63,6 +70,7 @@ def check_winner(row, column):
     check = 0
     winning = []
     while y >= 0:
+        print(winning)
         try:
             if buttons[x][y]['text'] == player:
                 winning.append([x, y])
@@ -73,7 +81,6 @@ def check_winner(row, column):
                     color_winner(winning)
                     return True
             else:
-                winning = []
                 break
         except Exception:  # it repairs 'int object is no subscriptable errors
             break
@@ -89,6 +96,7 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
                 winning = []
                 break
@@ -109,8 +117,8 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
-                winning = []
                 break
         except Exception:  # it repairs 'int object is no subscriptable errors
             break
@@ -126,6 +134,7 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
                 winning = []
                 break
@@ -146,8 +155,8 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
-                winning = []
                 break
         except Exception:
             break
@@ -165,6 +174,7 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
                 winning = []
                 break
@@ -184,8 +194,8 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
-                winning = []
                 break
         except Exception:
             break
@@ -205,6 +215,7 @@ def check_winner(row, column):
                 if check == 5:
                     color_winner(winning)
                     return True
+
             else:
                 winning = []
                 break
@@ -221,9 +232,14 @@ def generate_board():
     window.grid_rowconfigure(1, weight=1)
     window.grid_columnconfigure(0, weight=1)
 
-    width = window.winfo_screenwidth()
-    height = window.winfo_screenheight()
-    window.geometry("%dx%d" % (600, 600))
+    button_fields = 20
+    font_size = 20
+    button_width = 2
+    button_height = 1
+    window_width = (button_fields - 1) * button_width * font_size
+    window_height = button_fields * button_width * font_size
+    
+    window.geometry("%dx%d" % (window_width, window_height))
     frame = Frame(window, bg="black")
     frame.grid(row=1, column=1, sticky="nsew")
 
@@ -236,31 +252,27 @@ def generate_board():
                                 height=1,
                                 fg="white",
                                 command=restart_game))
+    restart_btn.grid(row=2, column=2)
 
     player_text.set(player + "'s" + " turn")
     turn_label = Label(window, textvariable=player_text, font=('consolas', 30))
     turn_label.grid(row=2, column=1)
 
-    for row in range(20):
-        pass
-
     # setting fields for the game
-    for row in range(0, 20):
+    for row in range(0, button_fields):
         buttons.append([])
-        for column in range(0, 20):
+        for column in range(0, button_fields):
             buttons[row].append(Button(frame,
                                           text="",
                                           bg="#000",
-                                          width=2,
-                                          height=1,
                                           fg="white",
+                                          width=button_width,
+                                          height=button_height,
+                                          font=('consolas',font_size),
+                                          padx=0,
+                                          pady=0,
                                           command=lambda row=row, column=column: button_press(row, column)))
             buttons[row][column].grid(row=row, column=column)
-
-
-
-def restart_game():
-    pass
 
 
 window = Tk()

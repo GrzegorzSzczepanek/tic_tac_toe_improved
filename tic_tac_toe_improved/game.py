@@ -238,25 +238,44 @@ def generate_board():
     button_height = 1
     window_width = (button_fields - 1) * button_width * font_size
     window_height = button_fields * button_width * font_size
-    
+
     window.geometry("%dx%d" % (window_width, window_height))
     frame = Frame(window, bg="black")
     frame.grid(row=1, column=1, sticky="nsew")
+    #option_buttons_frame = Frame(window, width=500, bg="black")
 
-    option_buttons_frame = Frame(window, width=500, bg="black")
+    info_frame = Frame(window,
+                        bg="white",
+                        width=window_width)
+    info_frame.grid(row=2, column=1, sticky="nsew")
+    info_frame.grid_columnconfigure(0, weight=1)
+    info_frame.grid_columnconfigure(1, weight=1)
+    info_frame.grid_columnconfigure(2, weight=1)
 
-    restart_btn = Button(Button(frame,
-                                text="Restart Game",
-                                bg="#000",
-                                width=2,
-                                height=1,
-                                fg="white",
-                                command=restart_game))
-    restart_btn.grid(row=2, column=2)
+    restart_btn = Button(info_frame,
+                        text="Restart Game",
+                        bg="white",
+                        fg="black",
+                        font=('consolas', 15),
+                        command=restart_game)
+    restart_btn.grid(row=0, column=2)
+
 
     player_text.set(player + "'s" + " turn")
-    turn_label = Label(window, textvariable=player_text, font=('consolas', 30))
-    turn_label.grid(row=2, column=1)
+    turn_label = Label(info_frame,
+                        bg="white",
+                        fg="black",
+                        textvariable=player_text,
+                        font=('consolas', 30))
+    # turn_label.pack()
+    turn_label.grid(row=0, column=1)
+
+    wins_label = Label(info_frame,
+                        text="X: 1 | O: 0",
+                        bg="white",
+                        fg="black",
+                        font=('consolas', 15))
+    wins_label.grid(row=0, column=0)
 
     # setting fields for the game
     for row in range(0, button_fields):

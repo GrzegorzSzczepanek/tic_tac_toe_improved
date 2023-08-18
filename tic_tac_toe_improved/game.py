@@ -12,7 +12,7 @@ player = random.choice(players)
 buttons = []
 x_wins, o_wins = 0, 0
 win_balance = StringVar()
-win_balance.set(f"X: {x_wins} | O: {o_wins}")
+win_balance.set(f"x: {x_wins} | o: {o_wins}")
 
 wins_label = Label
 

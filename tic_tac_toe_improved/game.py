@@ -3,8 +3,26 @@ from tkinter import *
 import socket
 
 
+window = Tk()
+
+player_text = StringVar()
+players = ["o", "x"]
+# variable used to check who's starting
+player = random.choice(players)
+buttons = []
+x_wins, o_wins = 0, 0
+win_balance = StringVar()
+win_balance.set(f"X: {x_wins} | O: {o_wins}")
+
+wins_label = Label
+
+
 def restart_game():
-    pass
+    for row in range(0, 20):
+        for column in range(0, 20):
+            buttons[row][column].config(state="normal",
+                                        text="",
+                                        bg="black")
 
 
 def disable_all_buttons():
@@ -14,20 +32,27 @@ def disable_all_buttons():
 
 
 def end_game(winner):
-    player_text.set(winner + " wins!")
+    global x_wins, o_wins
     disable_all_buttons()
+    player_text.set(winner + " wins!")
+    if player == "x":
+        x_wins += 1
+    else:
+        o_wins += 1
+    win_balance.set(f"x: {x_wins} | o: {o_wins}")
+
 
 
 def button_press(row, column):
     global player
-    clicked_button = str(row) + "," + str(column)
-    client.send(clicked_button.encode())
-    data = client.recv(2048)
-    data = data.decode('utf-8')
-    received_data = list(map(int, data.split(",")))
-    row = received_data[0]
-    column = received_data[1]
-    print("received: ", data)
+    # clicked_button = str(row) + "," + str(column)
+    # client.send(clicked_button.encode())
+    # data = client.recv(2048)
+    # data = data.decode('utf-8')
+    # received_data = list(map(int, data.split(",")))
+    # row = received_data[0]
+    # column = received_data[1]
+    # print("received: ", data)
 
     buttons[row][column].config(state="disabled")
 
@@ -223,7 +248,6 @@ def check_winner(row, column):
             break
 
     return False
-    player_text.set(player + " turn")
 
 
 def generate_board():
@@ -231,13 +255,16 @@ def generate_board():
     window.title("Tic Tac Toe 2")
     window.grid_rowconfigure(1, weight=1)
     window.grid_columnconfigure(0, weight=1)
+    window.resizable(False, False)
 
     button_fields = 20
     font_size = 20
     button_width = 2
     button_height = 1
     window_width = (button_fields - 1) * button_width * font_size
+    window_height = button_fields * button_width * font_size + 10
     window_height = button_fields * button_width * font_size
+
 
     window.geometry("%dx%d" % (window_width, window_height))
     frame = Frame(window, bg="black")
@@ -257,6 +284,7 @@ def generate_board():
                         bg="white",
                         fg="black",
                         font=('consolas', 15),
+                        padx=0, pady=0,
                         command=restart_game)
     restart_btn.grid(row=0, column=2)
 
@@ -265,15 +293,18 @@ def generate_board():
     turn_label = Label(info_frame,
                         bg="white",
                         fg="black",
+                        padx=0, pady=0,
                         textvariable=player_text,
                         font=('consolas', 30))
     # turn_label.pack()
     turn_label.grid(row=0, column=1)
 
     wins_label = Label(info_frame,
-                        text="X: 1 | O: 0",
+                        textvariable=win_balance,
                         bg="white",
                         fg="black",
+                        padx=0, pady=0,
+                        text="X: 1 | O: 0",
                         font=('consolas', 15))
     wins_label.grid(row=0, column=0)
 
@@ -294,18 +325,10 @@ def generate_board():
             buttons[row][column].grid(row=row, column=column)
 
 
-window = Tk()
-
-player_text = StringVar()
-players = ["o", "x"]
-# variable used to check who's starting
-player = random.choice(players)
-buttons = []
-
 generate_board()
 
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(("127.0.0.1", 15200))
+#client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#client.connect(("127.0.0.1", 15200))
 window.mainloop()
-client.close()
+#client.close()

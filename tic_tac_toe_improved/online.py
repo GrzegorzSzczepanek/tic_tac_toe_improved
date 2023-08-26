@@ -1,19 +1,19 @@
 import random
-from tkinter import *
 import socket
+import threading
+from tkinter import *
 
 
-HEADER = 64
+
+# HEADER = 64
 PORT = 5050
 FORMAT = "utf-8"
-DISCONNECT_MESSAGE = "!DISCONNECT"
-SERVER = "192.168.0.108"
+# DISCONNECT_MESSAGE = "!DISCONNECT"
+SERVER = "192.168.0.189"
 ADDR = (SERVER, PORT)
 # SERVER = socket.gethostbyname(socket.gethostname())
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
-
-
 
 window = Tk()
 
@@ -25,8 +25,88 @@ buttons = []
 x_wins, o_wins = 0, 0
 win_balance = StringVar()
 win_balance.set(f"X: {x_wins} | O: {o_wins}")
-
 wins_label = Label
+
+
+def set_buttons_for_opponent(row, column):
+    buttons[row][column].config(state="disabled")
+
+    if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
+        if player == players[0]:
+            buttons[row][column]['text'] = player
+
+            if check_winner(row, column, player):
+                end_game(player)
+                return ""
+
+            # change to other player
+            player = players[1]
+        else:
+            buttons[row][column]['text'] = player
+
+            if check_winner(row, column, player):
+                end_game(player)
+                return ""
+
+            # change to other player
+            player = players[0]
+
+    player_text.set(player + " turn")
+
+
+def write(row, column, player):
+    # message = f'{"huj"}: {input("")}'
+    # message = input("dupa")
+    client.send(f"{row},{column},{player}".encode('ascii'))
+
+
+def receive():
+    while True:
+        try:
+            message = client.recv(1024).decode('ascii')
+            print(message)
+            message = message.split(",")
+            set_buttons_for_opponent(int(message[0]), int(message[1]))
+        except:
+            print("An error occurred!")
+            client.close()
+            break
+
+
+
+def button_press(row, column):
+    global player
+    write(row, column, player)
+
+    # buttons[row][column].config(state="disabled")
+
+    # if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
+    #     if player == players[0]:
+    #         buttons[row][column]['text'] = player
+
+    #         if check_winner(row, column, player):
+    #             end_game(player)
+    #             return ""
+
+    #         move_message = f"MOVE|{row},{column},{player}"
+    #         client.send(move_message.encode('utf-8'))
+
+    #         # change to other player
+    #         player = players[1]
+    #     else:
+    #         buttons[row][column]['text'] = player
+
+    #         if check_winner(row, column, player):
+    #             end_game(player)
+    #             return ""
+
+    #         move_message = f"MOVE|{row},{column},{player}"
+    #         client.send(move_message.encode('utf-8'))
+
+    #         # change to other player
+    #         player = players[0]
+
+    # player_text.set(player + " turn")
 
 
 def restart_game():
@@ -56,51 +136,6 @@ def end_game(winner):
 
 def use_message(cords):
     print(cords)
-
-
-def send(msg):
-    print(client.recv(2048).decode(FORMAT))
-    message = msg.encode(FORMAT)
-    msg_length = len(message)
-    send_length = str(msg_length).encode(FORMAT)
-    send_length += b" " * (HEADER - len(send_length))
-    client.send(send_length)
-    client.send(message)
-
-    use_message(client.recv(2048).decode(FORMAT))
-
-
-def button_press(row, column):
-    global player
-    send(f"{row},{column}")
-
-    buttons[row][column].config(state="disabled")
-
-    if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
-        if player == players[0]:
-            buttons[row][column]['text'] = player
-
-            # print(buttons[row][column]['text'])
-            if check_winner(row, column, player):
-                end_game(player)
-                return ""
-
-            # change to other player
-            player = players[1]
-        else:
-            buttons[row][column]['text'] = player
-
-            if check_winner(row, column, player):
-                end_game(player)
-                return ""
-
-            # change to other player
-            player = players[0]
-
-    # inform about another players turn
-    player_text.set(player + " turn")
-
-# check is number of current player symbols in row or column
 
 
 def color_winner(cords):
@@ -345,8 +380,14 @@ def generate_board():
             buttons[row][column].grid(row=row, column=column)
 
 
-generate_board()
 
+receive_thread = threading.Thread(target=receive)
+receive_thread.start()
+
+# write_thread = threading.Thread(target=write)
+# write_thread.start()
+
+generate_board()
 
 #client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #client.connect(("127.0.0.1", 15200))

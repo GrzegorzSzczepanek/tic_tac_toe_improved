@@ -28,45 +28,47 @@ win_balance.set(f"X: {x_wins} | O: {o_wins}")
 wins_label = Label
 
 
-def set_buttons_for_opponent(row, column):
+# p as third argument stands for player. I couldn't name it player because it wouldn't change
+# between players at all
+def set_buttons_for_opponent(row, column, p):
+    print(p)
     buttons[row][column].config(state="disabled")
+    # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
+    if p == players[0]:
+        buttons[row][column]['text'] = p
 
-    if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
-        if player == players[0]:
-            buttons[row][column]['text'] = player
+        if check_winner(row, column, p):
+            end_game(p)
+            return
+        # change to other player
+        player = players[1]
+    else:
+        buttons[row][column]['text'] = p
 
-            if check_winner(row, column, player):
-                end_game(player)
-                return ""
+        if check_winner(row, column, p):
+            end_game(p)
+            return
 
-            # change to other player
-            player = players[1]
-        else:
-            buttons[row][column]['text'] = player
-
-            if check_winner(row, column, player):
-                end_game(player)
-                return ""
-
-            # change to other player
-            player = players[0]
+        # change to other player
+        player = players[0]
 
     player_text.set(player + " turn")
 
 
 def write(row, column, player):
-    # message = f'{"huj"}: {input("")}'
-    # message = input("dupa")
-    client.send(f"{row},{column},{player}".encode('ascii'))
+    client.send(f"{row},{column},{player}".encode(FORMAT))
+    return
 
 
 def receive():
     while True:
         try:
-            message = client.recv(1024).decode('ascii')
+            message = client.recv(1024).decode(FORMAT)
             print(message)
+            # message = list(map(lambda x: int(x), message.split(",")))
             message = message.split(",")
-            set_buttons_for_opponent(int(message[0]), int(message[1]))
+            print(message)
+            set_buttons_for_opponent(int(message[0]), int(message[1]), message[2])
         except:
             print("An error occurred!")
             client.close()
@@ -76,9 +78,15 @@ def receive():
 
 def button_press(row, column):
     global player
+    #write(row, column, player)
     write(row, column, player)
+    for i in players:
+        if i != player:
+            player = i
+    player_text.set(player + " turn")
 
-    # buttons[row][column].config(state="disabled")
+    return
+    # set_buttons_for_opponent(row, column)
 
     # if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
     #     if player == players[0]:

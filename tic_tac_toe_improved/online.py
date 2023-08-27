@@ -30,7 +30,7 @@ wins_label = Label
 
 # p as third argument stands for player. I couldn't name it player because it wouldn't change
 # between players at all
-def set_buttons_for_opponent(row, column, p):
+def set_buttons_for_players(row, column, p):
     print(p)
     buttons[row][column].config(state="disabled")
     # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
@@ -40,19 +40,12 @@ def set_buttons_for_opponent(row, column, p):
         if check_winner(row, column, p):
             end_game(p)
             return
-        # change to other player
-        player = players[1]
     else:
         buttons[row][column]['text'] = p
 
         if check_winner(row, column, p):
             end_game(p)
             return
-
-        # change to other player
-        player = players[0]
-
-    player_text.set(player + " turn")
 
 
 def write(row, column, player):
@@ -68,7 +61,7 @@ def receive():
             # message = list(map(lambda x: int(x), message.split(",")))
             message = message.split(",")
             print(message)
-            set_buttons_for_opponent(int(message[0]), int(message[1]), message[2])
+            set_buttons_for_players(int(message[0]), int(message[1]), message[2])
         except:
             print("An error occurred!")
             client.close()
@@ -80,41 +73,12 @@ def button_press(row, column):
     global player
     #write(row, column, player)
     write(row, column, player)
+    # player change
     for i in players:
         if i != player:
             player = i
+            break
     player_text.set(player + " turn")
-
-    return
-    # set_buttons_for_opponent(row, column)
-
-    # if buttons[row][column]['text'] == "" and check_winner(row, column, player) is False:
-    #     if player == players[0]:
-    #         buttons[row][column]['text'] = player
-
-    #         if check_winner(row, column, player):
-    #             end_game(player)
-    #             return ""
-
-    #         move_message = f"MOVE|{row},{column},{player}"
-    #         client.send(move_message.encode('utf-8'))
-
-    #         # change to other player
-    #         player = players[1]
-    #     else:
-    #         buttons[row][column]['text'] = player
-
-    #         if check_winner(row, column, player):
-    #             end_game(player)
-    #             return ""
-
-    #         move_message = f"MOVE|{row},{column},{player}"
-    #         client.send(move_message.encode('utf-8'))
-
-    #         # change to other player
-    #         player = players[0]
-
-    # player_text.set(player + " turn")
 
 
 def restart_game():

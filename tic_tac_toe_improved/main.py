@@ -11,9 +11,8 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 server.listen()
 
-# Lists For Clients and Their Nicknames
 clients = []
-# nicknames = []
+players = ["o", "x"]
 
 
 def broadcast(message):

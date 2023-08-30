@@ -57,15 +57,20 @@ def receive():
     while True:
         try:
             message = client.recv(1024).decode(FORMAT)
-            print(message)
+            if message == "NICK":
+                client.send(player.encode("ascii"))
+            else:
+                print(message)
             # message = list(map(lambda x: int(x), message.split(",")))
             message = message.split(",")
             print(message)
-            set_buttons_for_players(int(message[0]), int(message[1]), message[2])
+
         except:
             print("An error occurred!")
             client.close()
             break
+        if len(message) > 1:
+            set_buttons_for_players(int(message[0]), int(message[1]), message[2])
 
 
 
@@ -315,7 +320,7 @@ def generate_board():
                         command=restart_game)
     restart_btn.grid(row=0, column=2)
 
-# 
+
     player_text.set(player + "'s" + " turn")
     turn_label = Label(info_frame,
                         bg="white",

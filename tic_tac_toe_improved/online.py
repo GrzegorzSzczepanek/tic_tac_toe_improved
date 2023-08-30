@@ -31,7 +31,7 @@ wins_label = Label
 # p as third argument stands for player. I couldn't name it player because it wouldn't change
 # between players at all
 def set_buttons_for_players(row, column, p):
-    print(p)
+    # print(p)
     buttons[row][column].config(state="disabled")
     # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
     if p == players[0]:
@@ -79,11 +79,11 @@ def button_press(row, column):
     #write(row, column, player)
     write(row, column, player)
     # player change
-    for i in players:
-        if i != player:
-            player = i
-            break
-    player_text.set(player + " turn")
+    # for i in players:
+    #     if i != player:
+    #         player = i
+    #         break
+    # player_text.set(player + " turn")
 
 
 def restart_game():
@@ -95,9 +95,17 @@ def restart_game():
 
 
 def disable_all_buttons():
-    for row in range(0, 20):
-        for column in range(0, 20):
+    for row in range(len(buttons)):
+        for column in range(len(buttons)):
             buttons[row][column].config(state="disabled")
+
+
+# Player who's waiting for their turn shouldn't be able to click any buttons
+def unlock_unclicked_buttons():
+    for row in range(len(buttons)):
+        for column in range(len(buttons)):
+            ifbuttons[row][column]
+
 
 
 def end_game(winner):

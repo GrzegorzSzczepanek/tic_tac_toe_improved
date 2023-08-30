@@ -315,7 +315,7 @@ def generate_board():
                         command=restart_game)
     restart_btn.grid(row=0, column=2)
 
-
+# 
     player_text.set(player + "'s" + " turn")
     turn_label = Label(info_frame,
                         bg="white",

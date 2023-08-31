@@ -4,13 +4,10 @@ import threading
 from tkinter import *
 
 
-# HEADER = 64
 PORT = 5050
 FORMAT = "utf-8"
-# DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = "192.168.0.189"
 ADDR = (SERVER, PORT)
-# SERVER = socket.gethostbyname(socket.gethostname())
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
@@ -18,8 +15,6 @@ window = Tk()
 
 player_text = StringVar()
 players = ["o", "x"]
-# variable used to check who's starting
-# player = random.choice(players)
 buttons = []
 x_wins, o_wins = 0, 0
 win_balance = StringVar()
@@ -31,7 +26,6 @@ wins_label = Label
 # between players at all
 def set_buttons_for_players(row, column, p):
     buttons[row][column].config(state="disabled")
-    player_text = f"{p} turn"
     if p == players[0]:
         buttons[row][column]['text'] = p
 
@@ -62,13 +56,19 @@ def receive():
             message = client.recv(1024).decode(FORMAT)
             if len(message) == 1 and player is None:
                 player = message
-                print(player == msg)
+                if player == "x":
+                    player_text.set("You begin")
                 if player == msg:
                     disable_all_buttons()
 
+            if len(msg.split(",")) > 1:
+                # we sent data with our player name so normally we want to change to the other player. I needed to do it that way because I receive the same message I net back
+                current = "x" if msg.split(',')[2] == "x" else "o"
+                # current = "x" if (player == "o" and msg.split(',')[2] == "o") else "o"
+                player_text.set(f"{current} turn")
+            # print(player)
+            # print(message)
             message = message.split(",")
-            print(player)
-            print(message)
 
         except:
             print("An error occurred!")
@@ -86,6 +86,8 @@ def receive():
 def button_press(row, column):
     #write(row, column, player)
     write(row, column, player)
+    pp = "o" if player == "o" else "x"
+    
     disable_all_buttons()
 
 
@@ -335,8 +337,7 @@ def generate_board():
                         command=restart_game)
     restart_btn.grid(row=0, column=2)
 
-
-    player_text.set(player + " " + " turn")
+    player_text.set("x turn")
     turn_label = Label(info_frame,
                         bg="white",
                         fg="black",
@@ -372,6 +373,7 @@ def generate_board():
             buttons[row][column].grid(row=row, column=column)
 
 
+generate_board()
 
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
@@ -379,7 +381,7 @@ receive_thread.start()
 # write_thread = threading.Thread(target=write)
 # write_thread.start()
 
-generate_board()
+
 
 #client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #client.connect(("127.0.0.1", 15200))

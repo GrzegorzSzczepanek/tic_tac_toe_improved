@@ -19,6 +19,7 @@ def broadcast(message):
     print(f"--------------\n{message}\n----------------")
     for client in clients:
         client.send(message)
+    # client.send(message)
 
 
 def handle(client):
@@ -32,7 +33,7 @@ def handle(client):
             broadcast(message)
         except:
             # Removing And Closing Clients
-            index = clients.index(client)
+            # index = clients.index(client)
             clients.remove(client)
             client.close()
             break

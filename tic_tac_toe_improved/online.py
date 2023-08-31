@@ -31,7 +31,7 @@ wins_label = Label
 # between players at all
 def set_buttons_for_players(row, column, p):
     buttons[row][column].config(state="disabled")
-    # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
+    player_text = f"{p} turn"
     if p == players[0]:
         buttons[row][column]['text'] = p
 
@@ -46,9 +46,13 @@ def set_buttons_for_players(row, column, p):
             return
 
 
+msg = "o"
 def write(row, column, player):
-    client.send(f"{row},{column},{player}".encode(FORMAT))
+    global msg
+    msg = f"{row},{column},{player}"
+    client.send(msg.encode(FORMAT))
     return
+
 
 player = None
 def receive():
@@ -58,11 +62,12 @@ def receive():
             message = client.recv(1024).decode(FORMAT)
             if len(message) == 1 and player is None:
                 player = message
+                print(player == msg)
+                if player == msg:
+                    disable_all_buttons()
 
             message = message.split(",")
-            # message = list(map(lambda x: int(x), message.split(",")))
             print(player)
-            
             print(message)
 
         except:
@@ -72,18 +77,16 @@ def receive():
 
         if len(message) > 1:
             set_buttons_for_players(int(message[0]), int(message[1]), message[2])
-
+        
+        print(message, msg, sep="\n")
+        if len(message) != 1 and (msg is not None) and message != msg.split(','):
+            unlock_unclicked_buttons()
 
 
 def button_press(row, column):
     #write(row, column, player)
     write(row, column, player)
-    # player change
-    # for i in players:
-    #     if i != player:
-    #         player = i
-    #         break
-    # player_text.set(player + " turn")
+    disable_all_buttons()
 
 
 def restart_game():
@@ -92,6 +95,8 @@ def restart_game():
             buttons[row][column].config(state="normal",
                                         text="",
                                         bg="black")
+
+    client.send("restart".encode(FORMAT))
 
 
 def disable_all_buttons():
@@ -331,7 +336,7 @@ def generate_board():
     restart_btn.grid(row=0, column=2)
 
 
-    player_text.set(player + "'s" + " turn")
+    player_text.set(player + " " + " turn")
     turn_label = Label(info_frame,
                         bg="white",
                         fg="black",

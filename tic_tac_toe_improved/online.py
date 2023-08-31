@@ -30,7 +30,6 @@ wins_label = Label
 # p as third argument stands for player. I couldn't name it player because it wouldn't change
 # between players at all
 def set_buttons_for_players(row, column, p):
-    # player = p
     buttons[row][column].config(state="disabled")
     # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
     if p == players[0]:
@@ -51,18 +50,19 @@ def write(row, column, player):
     client.send(f"{row},{column},{player}".encode(FORMAT))
     return
 
-
+player = None
 def receive():
     global player
     while True:
         try:
             message = client.recv(1024).decode(FORMAT)
-            if message == "x":
-                player = "x"
-            else:
-                player = "o" 
-            # message = list(map(lambda x: int(x), message.split(",")))
+            if len(message) == 1 and player is None:
+                player = message
+
             message = message.split(",")
+            # message = list(map(lambda x: int(x), message.split(",")))
+            print(player)
+            
             print(message)
 
         except:
@@ -75,8 +75,7 @@ def receive():
 
 
 
-def button_press(row, column, player):
-    # global player
+def button_press(row, column):
     #write(row, column, player)
     write(row, column, player)
     # player change
@@ -364,7 +363,7 @@ def generate_board():
                                           font=('consolas',font_size),
                                           padx=0,
                                           pady=0,
-                                          command=lambda row=row, column=column: button_press(row, column, player)))
+                                          command=lambda row=row, column=column: button_press(row, column)))
             buttons[row][column].grid(row=row, column=column)
 
 

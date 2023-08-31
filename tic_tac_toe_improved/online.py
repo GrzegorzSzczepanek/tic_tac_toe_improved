@@ -4,7 +4,6 @@ import threading
 from tkinter import *
 
 
-
 # HEADER = 64
 PORT = 5050
 FORMAT = "utf-8"
@@ -20,7 +19,7 @@ window = Tk()
 player_text = StringVar()
 players = ["o", "x"]
 # variable used to check who's starting
-player = random.choice(players)
+# player = random.choice(players)
 buttons = []
 x_wins, o_wins = 0, 0
 win_balance = StringVar()
@@ -31,7 +30,7 @@ wins_label = Label
 # p as third argument stands for player. I couldn't name it player because it wouldn't change
 # between players at all
 def set_buttons_for_players(row, column, p):
-    # print(p)
+    # player = p
     buttons[row][column].config(state="disabled")
     # if buttons[row][column]['text'] == "" and check_winner(row, column, p) is False:
     if p == players[0]:
@@ -54,13 +53,14 @@ def write(row, column, player):
 
 
 def receive():
+    global player
     while True:
         try:
             message = client.recv(1024).decode(FORMAT)
-            if message == "NICK":
-                client.send(player.encode("ascii"))
+            if message == "x":
+                player = "x"
             else:
-                print(message)
+                player = "o" 
             # message = list(map(lambda x: int(x), message.split(",")))
             message = message.split(",")
             print(message)
@@ -69,13 +69,14 @@ def receive():
             print("An error occurred!")
             client.close()
             break
+
         if len(message) > 1:
             set_buttons_for_players(int(message[0]), int(message[1]), message[2])
 
 
 
-def button_press(row, column):
-    global player
+def button_press(row, column, player):
+    # global player
     #write(row, column, player)
     write(row, column, player)
     # player change
@@ -101,10 +102,12 @@ def disable_all_buttons():
 
 
 # Player who's waiting for their turn shouldn't be able to click any buttons
+# that's why after blocking buttons we will unlock just yet uncliked buttons
 def unlock_unclicked_buttons():
     for row in range(len(buttons)):
         for column in range(len(buttons)):
-            ifbuttons[row][column]
+            if buttons[row][column]['text'] not in players:
+                buttons[row][column].config(state="normal")
 
 
 
@@ -361,7 +364,7 @@ def generate_board():
                                           font=('consolas',font_size),
                                           padx=0,
                                           pady=0,
-                                          command=lambda row=row, column=column: button_press(row, column)))
+                                          command=lambda row=row, column=column: button_press(row, column, player)))
             buttons[row][column].grid(row=row, column=column)
 
 

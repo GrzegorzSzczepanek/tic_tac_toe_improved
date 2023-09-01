@@ -15,11 +15,16 @@ clients = []
 players = ["o", "x"]
 
 
-def broadcast(message):
+def broadcast(message, c=None):
     print(f"--------------\n{message}\n----------------")
-    for client in clients:
-        client.send(message)
-    # client.send(message)
+
+    if c is not None:
+        for client in clients:
+            if client != c:
+                client.send(message) # send restart game message
+    else:
+        for client in clients:
+            client.send(message)
 
 
 def handle(client):
@@ -30,7 +35,10 @@ def handle(client):
             # Broadcasting Messages
             message = client.recv(1024)
             print(f"--------------\n{message}\n----------------".encode(FORMAT))
-            broadcast(message)
+            if message == "restart":
+                broadcast(message, client)
+            else:
+                broadcast(message)
         except:
             # Removing And Closing Clients
             # index = clients.index(client)

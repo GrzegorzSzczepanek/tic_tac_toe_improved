@@ -29,15 +29,13 @@ def set_buttons_for_players(row, column, p):
     if p == players[0]:
         buttons[row][column]['text'] = p
 
-        if check_winner(row, column, p):
-            end_game(p)
-            return
+        if check_winner(row, column, p) is not False:
+            end_game(check_winner(row, column, p))
     else:
         buttons[row][column]['text'] = p
 
-        if check_winner(row, column, p):
-            end_game(p)
-            return
+        if check_winner(row, column, p) is not False:
+            end_game(check_winner(row, column, p))
 
 
 msg = "o"
@@ -61,6 +59,8 @@ def receive():
                 if player == msg:
                     disable_all_buttons()
 
+            elif message == "restart":
+                restart_game()
             if len(msg.split(",")) > 1:
                 # we sent data with our player name so normally we want to change to the other player. I needed to do it that way because I receive the same message I net back
                 current = "x" if msg.split(',')[2] == "x" else "o"
@@ -86,9 +86,16 @@ def receive():
 def button_press(row, column):
     #write(row, column, player)
     write(row, column, player)
-    pp = "o" if player == "o" else "x"
+    # pp = "o" if player == "o" else "x"
     
     disable_all_buttons()
+
+
+# this function is made like this so the game will not be restarted infinite
+# amount of times after player receive "restart" message from server
+def trigger_restart():
+    restart_game()
+    client.send("restart".encode(FORMAT))
 
 
 def restart_game():
@@ -97,8 +104,13 @@ def restart_game():
             buttons[row][column].config(state="normal",
                                         text="",
                                         bg="black")
+    if player == "o":
+        disable_all_buttons()
+        player_text.set("x starts")
+    else:
+        player_text.set("You begin")
 
-    client.send("restart".encode(FORMAT))
+
 
 
 def disable_all_buttons():
@@ -116,12 +128,15 @@ def unlock_unclicked_buttons():
                 buttons[row][column].config(state="normal")
 
 
-
-def end_game(winner):
+def end_game(winning):
     global x_wins, o_wins
     disable_all_buttons()
+    # for button in buttons:
+    #     if button.cget("background")
+
+    winner = color_winner(winning)
     player_text.set(winner + " wins!")
-    if winner == "X":
+    if winner == "x":
         x_wins += 1
     else:
         o_wins += 1
@@ -133,8 +148,12 @@ def use_message(cords):
 
 
 def color_winner(cords):
+    print(cords)
     for i in cords:
         buttons[i[0]][i[1]].config(bg="green")
+
+    winner = buttons[cords[0][0]][cords[0][1]].cget("text")
+    return winner
 
 
 def check_winner(row, column, player):
@@ -152,8 +171,7 @@ def check_winner(row, column, player):
                 y -= 1
                 # print(check)
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
             else:
                 break
         except Exception:  # it repairs 'int object is no subscriptable errors
@@ -168,8 +186,7 @@ def check_winner(row, column, player):
                 y += 1
                 # print(check)
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 winning = []
@@ -189,8 +206,7 @@ def check_winner(row, column, player):
                 x -= 1
                 # print(check)
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 break
@@ -206,8 +222,7 @@ def check_winner(row, column, player):
                 x += 1
                 # print(check)
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 winning = []
@@ -227,8 +242,7 @@ def check_winner(row, column, player):
                 x += 1
                 y += 1
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 break
@@ -246,8 +260,7 @@ def check_winner(row, column, player):
                 y -= 1
                 check += 1
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 winning = []
@@ -266,8 +279,7 @@ def check_winner(row, column, player):
                 y -= 1
                 check += 1
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 break
@@ -287,8 +299,7 @@ def check_winner(row, column, player):
                 check += 1
                 # buttons.append()
                 if check == 5:
-                    color_winner(winning)
-                    return True
+                    return winning
 
             else:
                 winning = []
@@ -334,7 +345,7 @@ def generate_board():
                         fg="black",
                         font=('consolas', 15),
                         padx=0, pady=0,
-                        command=restart_game)
+                        command=trigger_restart)
     restart_btn.grid(row=0, column=2)
 
     player_text.set("x turn")
@@ -344,7 +355,7 @@ def generate_board():
                         padx=0, pady=0,
                         textvariable=player_text,
                         font=('consolas', 30))
-    # turn_label.pack()
+
     turn_label.grid(row=0, column=1)
 
     wins_label = Label(info_frame,
@@ -378,12 +389,4 @@ generate_board()
 receive_thread = threading.Thread(target=receive)
 receive_thread.start()
 
-# write_thread = threading.Thread(target=write)
-# write_thread.start()
-
-
-
-#client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client.connect(("127.0.0.1", 15200))
 window.mainloop()
-#client.close()

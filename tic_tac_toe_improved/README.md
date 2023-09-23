@@ -5,3 +5,5 @@
 ![image](https://github.com/GrzegorzSzczepanek/tic_tac_toe_improved/assets/113286903/50430479-6764-4f96-a002-bd1b6da0824b)
 ![image](https://github.com/GrzegorzSzczepanek/tic_tac_toe_improved/assets/113286903/abef82b2-4a32-4f43-8fa7-20714e74e7d7)
 
+### Simple gui allowing player to choose desired more
+![image](https://github.com/GrzegorzSzczepanek/tic_tac_toe_improved/assets/113286903/6fabcd45-db25-42b7-985c-65d0efaa176b)

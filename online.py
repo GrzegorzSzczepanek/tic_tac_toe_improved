@@ -36,24 +36,22 @@ def set_game_for_player():
     def set_buttons_for_players(row, column, p):
         buttons[row][column].config(state="disabled")
         if p == players[0]:
-            buttons[row][column]['text'] = p
+            buttons[row][column]["text"] = p
 
             if check_winner(row, column, p) is not False:
                 end_game(check_winner(row, column, p))
         else:
-            buttons[row][column]['text'] = p
+            buttons[row][column]["text"] = p
 
             if check_winner(row, column, p) is not False:
                 end_game(check_winner(row, column, p))
 
-
     msg = "o"
+
     def write(row, column, player):
         global msg
         msg = f"{row},{column},{player}"
         client.send(msg.encode(FORMAT))
-
-
 
     def receive():
         global player
@@ -73,28 +71,31 @@ def set_game_for_player():
                 if len(msg.split(",")) > 1:
                     # we sent data with our player name so normally we want to change to the other player.
                     # I needed to do it that way because, I receive the same message I net back
-                    current = "x" if msg.split(',')[2] == "x" else "o"
+                    current = "x" if msg.split(",")[2] == "x" else "o"
                     player_text.set(f"{current} turn")
 
                 message = message.split(",")
 
             except:
-                print("An error occurred!")
+                # print("An error occurred!")
                 client.close()
                 break
 
             if len(message) > 1:
                 set_buttons_for_players(int(message[0]), int(message[1]), message[2])
-            
-            print(message, msg, sep="\n")
-            if len(message) != 1 and (msg is not None) and message != msg.split(',') and message[-1] != player:
-                unlock_unclicked_buttons()
 
+            # print(message, msg, sep="\n")
+            if (
+                len(message) != 1
+                and (msg is not None)
+                and message != msg.split(",")
+                and message[-1] != player
+            ):
+                unlock_unclicked_buttons()
 
     def button_press(row, column):
         disable_all_buttons()
         write(row, column, player)
-
 
     # this function is made like this so the game will not be restarted infinite
     # amount of times after player receive "restart" message from server
@@ -102,34 +103,28 @@ def set_game_for_player():
         restart_game()
         client.send("restart".encode(FORMAT))
 
-
     def restart_game():
         for row in range(0, 20):
             for column in range(0, 20):
-                buttons[row][column].config(state="normal",
-                                            text="",
-                                            bg="black")
+                buttons[row][column].config(state="normal", text="", bg="black")
         if player == "o":
             disable_all_buttons()
             player_text.set("x starts")
         else:
             player_text.set("You begin")
 
-
     def disable_all_buttons():
         for row in range(len(buttons)):
             for column in range(len(buttons)):
                 buttons[row][column].config(state="disabled")
-
 
     # Player who's waiting for their turn shouldn't be able to click any buttons
     # that's why after blocking buttons we will unlock just yet uncliked buttons
     def unlock_unclicked_buttons():
         for row in range(len(buttons)):
             for column in range(len(buttons)):
-                if buttons[row][column]['text'] not in players:
+                if buttons[row][column]["text"] not in players:
                     buttons[row][column].config(state="normal")
-
 
     def end_game(winning):
         global x_wins, o_wins
@@ -145,15 +140,13 @@ def set_game_for_player():
             o_wins += 1
         win_balance.set(f"x: {x_wins} | o: {o_wins}")
 
-
     def color_winner(cords):
-        print(cords)
+        # print(cords)
         for i in cords:
             buttons[i[0]][i[1]].config(bg="green")
 
         winner = buttons[cords[0][0]][cords[0][1]].cget("text")
         return winner
-
 
     def check_winner(row, column, player):
         # check left
@@ -163,7 +156,7 @@ def set_game_for_player():
         winning = []
         while y >= 0:
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     check += 1
                     y -= 1
@@ -177,7 +170,7 @@ def set_game_for_player():
         y = column + 1
         while y <= len(buttons):
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     check += 1
                     y += 1
@@ -196,7 +189,7 @@ def set_game_for_player():
 
         while x >= 0:
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     check += 1
                     x -= 1
@@ -211,7 +204,7 @@ def set_game_for_player():
         x = row + 1
         while x <= len(buttons):
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     check += 1
                     x += 1
@@ -230,7 +223,7 @@ def set_game_for_player():
 
         while x <= len(buttons) and y <= len(buttons):
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     check += 1
                     x += 1
@@ -248,7 +241,7 @@ def set_game_for_player():
 
         while x >= 0 and y >= 0:
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     x -= 1
                     y -= 1
@@ -267,7 +260,7 @@ def set_game_for_player():
         check = 0
         while x <= len(buttons) and y <= len(buttons):
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     x += 1
                     y -= 1
@@ -286,7 +279,7 @@ def set_game_for_player():
 
         while x >= 0 and y <= len(buttons):
             try:
-                if buttons[x][y]['text'] == player:
+                if buttons[x][y]["text"] == player:
                     winning.append([x, y])
                     x -= 1
                     y += 1
@@ -303,7 +296,6 @@ def set_game_for_player():
 
         return False
 
-
     def generate_board():
         # window setup
         window.title("Tic Tac Toe 2")
@@ -319,64 +311,75 @@ def set_game_for_player():
         window_height = button_fields * button_width * font_size + 10
         window_height = button_fields * button_width * font_size
 
-
         window.geometry("%dx%d" % (window_width, window_height))
         frame = Frame(window, bg="black")
         frame.grid(row=1, column=1, sticky="nsew")
-        #option_buttons_frame = Frame(window, width=500, bg="black")
+        # option_buttons_frame = Frame(window, width=500, bg="black")
 
-        info_frame = Frame(window,
-                            bg="white",
-                            width=window_width)
+        info_frame = Frame(window, bg="white", width=window_width)
         info_frame.grid(row=2, column=1, sticky="nsew")
         info_frame.grid_columnconfigure(0, weight=1)
         info_frame.grid_columnconfigure(1, weight=1)
         info_frame.grid_columnconfigure(2, weight=1)
 
-        restart_btn = Button(info_frame,
-                            text="Restart Game",
-                            bg="white",
-                            fg="black",
-                            font=('consolas', 15),
-                            padx=0, pady=0,
-                            command=trigger_restart)
+        restart_btn = Button(
+            info_frame,
+            text="Restart Game",
+            bg="white",
+            fg="black",
+            font=("consolas", 15),
+            padx=0,
+            pady=0,
+            command=trigger_restart,
+        )
         restart_btn.grid(row=0, column=2)
 
         player_text.set("x turn")
-        turn_label = Label(info_frame,
-                            bg="white",
-                            fg="black",
-                            padx=0, pady=0,
-                            textvariable=player_text,
-                            font=('consolas', 30))
+        turn_label = Label(
+            info_frame,
+            bg="white",
+            fg="black",
+            padx=0,
+            pady=0,
+            textvariable=player_text,
+            font=("consolas", 30),
+        )
 
         turn_label.grid(row=0, column=1)
 
-        wins_label = Label(info_frame,
-                            textvariable=win_balance,
-                            bg="white",
-                            fg="black",
-                            padx=0, pady=0,
-                            text="X: 1 | O: 0",
-                            font=('consolas', 15))
+        wins_label = Label(
+            info_frame,
+            textvariable=win_balance,
+            bg="white",
+            fg="black",
+            padx=0,
+            pady=0,
+            text="X: 1 | O: 0",
+            font=("consolas", 15),
+        )
         wins_label.grid(row=0, column=0)
 
         # setting fields for the game
         for row in range(0, button_fields):
             buttons.append([])
             for column in range(0, button_fields):
-                buttons[row].append(Button(frame,
-                                            text="",
-                                            bg="#000",
-                                            fg="white",
-                                            width=button_width,
-                                            height=button_height,
-                                            font=('consolas',font_size),
-                                            padx=0,
-                                            pady=0,
-                                            command=lambda row=row, column=column: button_press(row, column)))
+                buttons[row].append(
+                    Button(
+                        frame,
+                        text="",
+                        bg="#000",
+                        fg="white",
+                        width=button_width,
+                        height=button_height,
+                        font=("consolas", font_size),
+                        padx=0,
+                        pady=0,
+                        command=lambda row=row, column=column: button_press(
+                            row, column
+                        ),
+                    )
+                )
                 buttons[row][column].grid(row=row, column=column)
-
 
     generate_board()
 

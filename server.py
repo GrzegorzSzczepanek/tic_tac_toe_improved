@@ -5,30 +5,26 @@ import threading
 def multiplayer():
     # Connection Data
 
-    HOST = '192.168.0.189'
+    HOST = "192.168.0.189"
     PORT = 5050
     ADDR = (HOST, PORT)
-    FORMAT = 'utf-8'
+    FORMAT = "utf-8"
     # Starting Server
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(ADDR)
     server.listen()
     clients = []
 
-
     def broadcast(message, c=None):
-        # print(f"--------------\n{message}\n----------------")
         if c is not None:
             for client in clients:
                 if client != c:
-                    client.send(message) # send restart game message
+                    client.send(message)  # send restart game message
         else:
             for client in clients:
                 client.send(message)
 
-
     def handle(client):
-        # print(f"--------------\n{client}\n----------------")
         while True:
             try:
                 # Broadcasting Messages
@@ -44,7 +40,6 @@ def multiplayer():
                 client.close()
                 server.close()
                 break
-
 
     def receive():
         player_x_name_set = False
@@ -63,7 +58,6 @@ def multiplayer():
 
             thread = threading.Thread(target=handle, args=(client,))
             thread.start()
-
 
     print(f"Server is listening on [{ADDR}]")
     receive()

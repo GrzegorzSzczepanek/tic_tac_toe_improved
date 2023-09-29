@@ -5,7 +5,7 @@ import threading
 def multiplayer():
     # Connection Data
 
-    HOST = "192.168.0.189"
+    HOST = "127.0.1.1"
     PORT = 5050
     ADDR = (HOST, PORT)
     FORMAT = "utf-8"

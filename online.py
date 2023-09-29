@@ -6,11 +6,16 @@ from server import multiplayer
 x_wins, o_wins = 0, 0
 
 
-def set_game_for_player():
-    PORT = 5050
+def set_game_for_player(server=None, port=5050):
+    PORT = int(port)
     FORMAT = "utf-8"
-    SERVER = "192.168.0.189"
-    ADDR = (SERVER, PORT)
+    if server == None:
+        SERVER = socket.gethostbyname(socket.gethostname())
+        ADDR = (SERVER, PORT)
+    else:
+        SERVER = server
+        ADDR = (SERVER, PORT)
+    print(ADDR)
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect(ADDR)

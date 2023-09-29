@@ -1,25 +1,35 @@
 import socket
 import threading
 from tkinter import *
+from server import multiplayer
+
+x_wins, o_wins = 0, 0
+
 
 def set_game_for_player():
     PORT = 5050
     FORMAT = "utf-8"
     SERVER = "192.168.0.189"
     ADDR = (SERVER, PORT)
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(ADDR)
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect(ADDR)
+
+    except ConnectionRefusedError:
+        multiplayer_thread = threading.Thread(target=multiplayer)
+        multiplayer_thread.start()
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect(ADDR)
 
     window = Tk()
 
     player_text = StringVar()
     players = ["o", "x"]
     buttons = []
-    x_wins, o_wins = 0, 0
+    global x_wins, o_wins
+
     win_balance = StringVar()
     win_balance.set(f"X: {x_wins} | O: {o_wins}")
-    wins_label = Label
-
 
     # p as third argument stands for player. I couldn't name it player because it wouldn't change
     # between players at all
@@ -42,12 +52,12 @@ def set_game_for_player():
         global msg
         msg = f"{row},{column},{player}"
         client.send(msg.encode(FORMAT))
-        return
 
 
-    player = None
+
     def receive():
         global player
+        player = None
         while True:
             try:
                 message = client.recv(1024).decode(FORMAT)
@@ -61,12 +71,11 @@ def set_game_for_player():
                 elif message == "restart":
                     restart_game()
                 if len(msg.split(",")) > 1:
-                    # we sent data with our player name so normally we want to change to the other player. I needed to do it that way because I receive the same message I net back
+                    # we sent data with our player name so normally we want to change to the other player.
+                    # I needed to do it that way because, I receive the same message I net back
                     current = "x" if msg.split(',')[2] == "x" else "o"
-                    # current = "x" if (player == "o" and msg.split(',')[2] == "o") else "o"
                     player_text.set(f"{current} turn")
-                # print(player)
-                # print(message)
+
                 message = message.split(",")
 
             except:
@@ -78,16 +87,13 @@ def set_game_for_player():
                 set_buttons_for_players(int(message[0]), int(message[1]), message[2])
             
             print(message, msg, sep="\n")
-            if len(message) != 1 and (msg is not None) and message != msg.split(','):
+            if len(message) != 1 and (msg is not None) and message != msg.split(',') and message[-1] != player:
                 unlock_unclicked_buttons()
 
 
     def button_press(row, column):
-        #write(row, column, player)
-        write(row, column, player)
-        # pp = "o" if player == "o" else "x"
-        
         disable_all_buttons()
+        write(row, column, player)
 
 
     # this function is made like this so the game will not be restarted infinite
@@ -108,8 +114,6 @@ def set_game_for_player():
             player_text.set("x starts")
         else:
             player_text.set("You begin")
-
-
 
 
     def disable_all_buttons():
@@ -142,10 +146,6 @@ def set_game_for_player():
         win_balance.set(f"x: {x_wins} | o: {o_wins}")
 
 
-    def use_message(cords):
-        print(cords)
-
-
     def color_winner(cords):
         print(cords)
         for i in cords:
@@ -162,13 +162,11 @@ def set_game_for_player():
         check = 0
         winning = []
         while y >= 0:
-            # print(winning)
             try:
                 if buttons[x][y]['text'] == player:
                     winning.append([x, y])
                     check += 1
                     y -= 1
-                    # print(check)
                     if check == 5:
                         return winning
                 else:
@@ -183,7 +181,6 @@ def set_game_for_player():
                     winning.append([x, y])
                     check += 1
                     y += 1
-                    # print(check)
                     if check == 5:
                         return winning
 
@@ -203,7 +200,6 @@ def set_game_for_player():
                     winning.append([x, y])
                     check += 1
                     x -= 1
-                    # print(check)
                     if check == 5:
                         return winning
 
@@ -219,7 +215,6 @@ def set_game_for_player():
                     winning.append([x, y])
                     check += 1
                     x += 1
-                    # print(check)
                     if check == 5:
                         return winning
 

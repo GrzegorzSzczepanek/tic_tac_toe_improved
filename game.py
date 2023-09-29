@@ -5,17 +5,14 @@ from tkinter import *
 players = ["o", "x"]
 # variable used to check who's starting
 player = random.choice(players)
-
+x_wins, o_wins = 0, 0
 
 def start_local_game():
     window = Tk()
     buttons = []
-    x_wins, o_wins = 0, 0
     player_text = StringVar()
     win_balance = StringVar()
     win_balance.set(f"x: {x_wins} | o: {o_wins}")
-
-    wins_label = Label
 
 
     def restart_game():
@@ -53,7 +50,6 @@ def start_local_game():
             if player == players[0]:
                 buttons[row][column]['text'] = player
 
-                # print(buttons[row][column]['text'])
                 if check_winner(row, column):
                     end_game(player)
                     return ""
@@ -88,19 +84,17 @@ def start_local_game():
         check = 0
         winning = []
         while y >= 0:
-            print(winning)
             try:
                 if buttons[x][y]['text'] == player:
                     winning.append([x, y])
                     check += 1
                     y -= 1
-                    # print(check)
                     if check == 5:
                         color_winner(winning)
                         return True
                 else:
                     break
-            except Exception:  # it repairs 'int object is no subscriptable errors
+            except:  # it repairs 'int object is no subscriptable errors
                 break
         # check right
         y = column + 1
@@ -110,7 +104,6 @@ def start_local_game():
                     winning.append([x, y])
                     check += 1
                     y += 1
-                    # print(check)
                     if check == 5:
                         color_winner(winning)
                         return True
@@ -118,7 +111,7 @@ def start_local_game():
                 else:
                     winning = []
                     break
-            except Exception:
+            except:
                 break
         # check top
         x = row
@@ -131,14 +124,13 @@ def start_local_game():
                     winning.append([x, y])
                     check += 1
                     x -= 1
-                    # print(check)
                     if check == 5:
                         color_winner(winning)
                         return True
 
                 else:
                     break
-            except Exception:  # it repairs 'int object is no subscriptable errors
+            except:  # it repairs 'int object is no subscriptable errors
                 break
         # check bottom
         x = row + 1
@@ -148,7 +140,6 @@ def start_local_game():
                     winning.append([x, y])
                     check += 1
                     x += 1
-                    # print(check)
                     if check == 5:
                         color_winner(winning)
                         return True
@@ -156,7 +147,7 @@ def start_local_game():
                 else:
                     winning = []
                     break
-            except Exception:
+            except:
                 break
         # right-bottom diagonal
         x = row
@@ -176,7 +167,7 @@ def start_local_game():
 
                 else:
                     break
-            except Exception:
+            except:
                 break
         # top-left diagonal
         x = row - 1
@@ -196,7 +187,7 @@ def start_local_game():
                 else:
                     winning = []
                     break
-            except Exception:
+            except:
                 break
         # bottom-left diagonal
         x = row
@@ -215,7 +206,7 @@ def start_local_game():
 
                 else:
                     break
-            except Exception:
+            except:
                 break
         # top-right diagonal
 
@@ -229,7 +220,6 @@ def start_local_game():
                     x -= 1
                     y += 1
                     check += 1
-                    # buttons.append()
                     if check == 5:
                         color_winner(winning)
                         return True
@@ -237,7 +227,7 @@ def start_local_game():
                 else:
                     winning = []
                     break
-            except Exception:
+            except:
                 break
 
         return False

@@ -9,7 +9,6 @@ x_wins, o_wins = 0, 0
 
 def set_game_for_player(server=None, port=5050):
     PORT = int(port)
-    print(port)
     FORMAT = "utf-8"
     if server == None:
         # gethostbyname and simillar ways of getting LAN ip are often returning localhost
@@ -18,19 +17,20 @@ def set_game_for_player(server=None, port=5050):
         SERVER = s.getsockname()[0]
         s.close()
         ADDR = (SERVER, PORT)
+        print("online.py", ADDR)
     else:
         SERVER = server
         ADDR = (SERVER, PORT)
-    print(ADDR)
+    # print(ADDR)   
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect(ADDR)
 
     except ConnectionRefusedError:
-        multiplayer_thread = threading.Thread(target=multiplayer, args=((ADDR, )))
+        multiplayer_thread = threading.Thread(target=multiplayer, args=((SERVER, PORT)))
         multiplayer_thread.start()
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print("\n", ADDR)
+        # print("\n", ADDR)
         client.connect(ADDR)
 
     window = Tk()

@@ -2,12 +2,12 @@ import socket
 import threading
 
 
-def multiplayer(ADDR):
+def multiplayer(HOST, PORT):
     # Connection Data
 
     # HOST = "127.0.1.1"
     # PORT = 5050
-    # ADDR = (HOST, PORT)
+    ADDR = (HOST, PORT)
     print("server.py", ADDR)
     FORMAT = "utf-8"
     # Starting Server

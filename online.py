@@ -2,23 +2,35 @@ import socket
 import threading
 from tkinter import *
 from server import multiplayer
+# import requests
 
 x_wins, o_wins = 0, 0
 
 
-def set_game_for_player():
-    PORT = 5050
+def set_game_for_player(server=None, port=5050):
+    PORT = int(port)
+    print(port)
     FORMAT = "utf-8"
-    SERVER = "192.168.0.189"
-    ADDR = (SERVER, PORT)
+    if server == None:
+        # gethostbyname and simillar ways of getting LAN ip are often returning localhost
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        SERVER = s.getsockname()[0]
+        s.close()
+        ADDR = (SERVER, PORT)
+    else:
+        SERVER = server
+        ADDR = (SERVER, PORT)
+    print(ADDR)
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect(ADDR)
 
     except ConnectionRefusedError:
-        multiplayer_thread = threading.Thread(target=multiplayer)
+        multiplayer_thread = threading.Thread(target=multiplayer, args=((ADDR, )))
         multiplayer_thread.start()
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print("\n", ADDR)
         client.connect(ADDR)
 
     window = Tk()

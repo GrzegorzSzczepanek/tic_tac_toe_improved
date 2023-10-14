@@ -7,7 +7,7 @@ from server import multiplayer
 x_wins, o_wins = 0, 0
 
 
-def set_game_for_player(server=None, port=5050):
+def set_game_for_player(server=None, port=None):
     PORT = int(port)
     FORMAT = "utf-8"
     if server == None:

@@ -1,6 +1,6 @@
 import socket
 import threading
-from tkinter import *
+import tkinter as tk
 from server import multiplayer
 # import requests
 
@@ -21,7 +21,7 @@ def set_game_for_player(server=None, port=None):
     else:
         SERVER = server
         ADDR = (SERVER, PORT)
-    # print(ADDR)   
+    # print(ADDR)
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect(ADDR)
@@ -33,14 +33,14 @@ def set_game_for_player(server=None, port=None):
         # print("\n", ADDR)
         client.connect(ADDR)
 
-    window = Tk()
+    window = tk.Tk()
 
-    player_text = StringVar()
+    player_text = tk.StringVar()
     players = ["o", "x"]
     buttons = []
     global x_wins, o_wins
 
-    win_balance = StringVar()
+    win_balance = tk.StringVar()
     win_balance.set(f"X: {x_wins} | O: {o_wins}")
 
     # p as third argument stands for player. I couldn't name it player because it wouldn't change
@@ -324,17 +324,17 @@ def set_game_for_player(server=None, port=None):
         window_height = button_fields * button_width * font_size
 
         window.geometry("%dx%d" % (window_width, window_height))
-        frame = Frame(window, bg="black")
+        frame = tk.Frame(window, bg="black")
         frame.grid(row=1, column=1, sticky="nsew")
         # option_buttons_frame = Frame(window, width=500, bg="black")
 
-        info_frame = Frame(window, bg="white", width=window_width)
+        info_frame = tk.Frame(window, bg="white", width=window_width)
         info_frame.grid(row=2, column=1, sticky="nsew")
         info_frame.grid_columnconfigure(0, weight=1)
         info_frame.grid_columnconfigure(1, weight=1)
         info_frame.grid_columnconfigure(2, weight=1)
 
-        restart_btn = Button(
+        restart_btn = tk.Button(
             info_frame,
             text="Restart Game",
             bg="white",
@@ -347,7 +347,7 @@ def set_game_for_player(server=None, port=None):
         restart_btn.grid(row=0, column=2)
 
         player_text.set("x turn")
-        turn_label = Label(
+        turn_label = tk.Label(
             info_frame,
             bg="white",
             fg="black",
@@ -359,7 +359,7 @@ def set_game_for_player(server=None, port=None):
 
         turn_label.grid(row=0, column=1)
 
-        wins_label = Label(
+        wins_label = tk.Label(
             info_frame,
             textvariable=win_balance,
             bg="white",
@@ -376,7 +376,7 @@ def set_game_for_player(server=None, port=None):
             buttons.append([])
             for column in range(0, button_fields):
                 buttons[row].append(
-                    Button(
+                    tk.Button(
                         frame,
                         text="",
                         bg="#000",

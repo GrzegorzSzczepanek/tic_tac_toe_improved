@@ -1,10 +1,9 @@
 import tkinter as tk
 from online import set_game_for_player
-from game import start_local_game
+from offline import start_local_game
 from socket import inet_aton
 
 if __name__ == "__main__":
-
 
     def join_to_host(window, ip_address, port):
         if not inet_aton(ip_address) or not port.isdigit() or int(port) not in range(1, 65535):
@@ -12,7 +11,6 @@ if __name__ == "__main__":
             return
         else:
             set_game_for_player(ip_address, port)
-
 
     def find_ip(window):
         for widget in window.winfo_children():
@@ -29,9 +27,9 @@ if __name__ == "__main__":
         port_entry = tk.Entry(window)
         port_entry.pack()
 
-        ip_submit = tk.Button(text="Find a game", command=lambda: join_to_host(window, ip_entry.get(), port_entry.get()))
+        ip_submit = tk.Button(text="Find a game", command=lambda: join_to_host(
+            window, ip_entry.get(), port_entry.get()))
         ip_submit.pack()
-
 
     def create_host(window, port):
         if port.isdigit() and int(port) in range(1, 65535):
@@ -48,8 +46,6 @@ if __name__ == "__main__":
         port_entry.pack()
         port_submit = tk.Button(text="Host a game", command=lambda: create_host(window, port_entry.get()))
         port_submit.pack()
-
-
 
     def start_game(option, window):
         if option == "lan":
